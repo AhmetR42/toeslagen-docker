@@ -1,0 +1,57 @@
+Naam: Ilyas Hamcho
+Projectsgroep: Beroepsproject P7 groep 2
+
+1. Persoonlijke bijdrage & technische realisatie
+Features die ik heb ontwikkeld
+•	Inloggen, account aanmaken en uitloggen: AuthController.php met auth/login.blade.php en auth/register.blade.php
+•	Rollen en rechten: RoleMiddleware.php, User.php en de pagina rollen.blade.php
+•	Admin gebruikersbeheer (rol wijzigen, blokkeren, verwijderen): AdminUserController.php met admin/users.blade.php
+•	Database: migration add_rol_to_users_table, DatabaseSeeder.php (adminaccount) en routes/web.php
+•	Design: de layout layouts/app.blade.php in de stijl van Toeslagen
+Knelpunten en oplossingen
+•	Rechten: Een gebruiker mocht zichzelf niet admin kunnen maken. Ik heb rol niet in $fillable gezet en de rol wordt alleen server-side gewijzigd.
+•	Toegang: Adminpagina’s zijn beveiligd met middleware (role:admin). Andere gebruikers krijgen een 403.
+•	SQL-injectie: Ik gebruik Eloquent, dat achter de schermen PDO prepared statements gebruikt. Ik heb nergens zelf queries in elkaar geplakt.
+•	Sessies en misbruik: Na het inloggen vernieuw ik de sessie (session()->regenerate()). Inloggen is beperkt tot 10 pogingen per minuut (throttle). Geblokkeerde gebruikers kunnen niet inloggen.
+•	Opzet van het project: Bij het installeren liep ik tegen fouten aan (ontbrekende vendor-map, bootstrap/cache en een beschadigde .env). Ik heb geleerd om foutmeldingen stap voor stap te lezen en te herstellen.
+Code waar ik trots op ben
+php
+public function updateRole(Request $r, User $user)
+{
+    abort_if($user->id === $r->user()->id, 403, 'Je kunt je eigen rol niet wijzigen.');
+    $d = $r->validate(['rol' => ['required', Rule::in(array_keys(User::ROLLEN))]]);
+    $user->forceFill($d)->save();
+
+    return back()->with('ok', 'Rol bijgewerkt.');
+}
+Dit is veilig, want alleen bestaande rollen worden geaccepteerd en een admin kan zichzelf niet buitensluiten. De rollen staan op één plek (User::ROLLEN), dus als er een rol bijkomt, hoef ik dat maar één keer aan te passen. De functie is kort en goed te lezen.
+Verbeterpunten bij een refactoring
+•	Rollen opslaan in een aparte tabel of enum, zodat ze flexibeler zijn.
+•	De tabel op de pagina Rollen & rechten staat nu hardcoded in de view. Die kan uit config of database komen.
+•	Validatie verplaatsen naar Form Requests en rechten naar Policies.
+•	Tests schrijven (Feature tests voor inloggen en toegang).
+•	Paginering in gebruikersbeheer, wachtwoord vergeten en een logboek van adminacties.
+•	Het adminwachtwoord uit de seeder halen en in .env zetten.
+
+2. Versiebeheer & Git-workflow
+•	Werkte je met feature branches of direct op main? Ik heb in mijn eigen branch (Ilyas) gewerkt
+•    Hoe zagen je commitberichten eruit? 
+
+•	Welke merge conflicts of problemen had je en hoe losten jullie die op? De database die werkte aan het begin niet
+•	Past de commit history bij je werkelijke inzet? Nee omdat ik niet altijd de tijd had om aan te werken.
+
+3. Samenwerking, communicatie & groepsproces
+•	Hoe waren de planning en taakverdeling? Trello: Ahmet had de taken verdeelt en iedereen vond dat het eerlijk is.
+•	Bleef de planning realistisch? Wat deden jullie bij vertraging? Mijn taken vond ik goed te doen. Ik had geen vertragingen.
+•	Hoe verliepen de overleggen? We hebben een teams groep waar we in communiceren.
+•	Wat was jouw rol? Verbinder, ik vroeg iedereen af en toe waar ze zijn en of alles goed met hun gaat. 
+•	Hoe gingen jullie om met niveauverschillen? Toevallig hebben we google als we iets niet weten dan gaan we gewoon opzoeken.
+
+4. Beroepshouding & leerdoelen
+Twee technische inzichten
+1.	Security-by-design: Beveilig dingen vanaf het begin op de server (middleware, validatie, $fillable) en vertrouw nooit alleen op wat de gebruiker in een formulier invult.
+2.	Gestructureerd werken: Een schone scheiding tussen routes, controllers, models en views maakt code makkelijker te onderhouden en te testen.
+Werkhouding
+Ik heb geleerd om foutmeldingen rustig te lezen en stap voor stap te testen in plaats van te gokken.
+Eindcijfer
+Ik geef ons een 8 het kon beter 

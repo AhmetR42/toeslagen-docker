@@ -1,0 +1,12 @@
+.git
+.env
+documentatie
+**/node_modules
+toeslagen/vendor
+toeslagen/toeslagen
+toeslagen/toeslagen-laravel
+toeslagen/.env
+toeslagen/database/*.sqlite*
+toeslagen/storage/logs/*
+toeslagen/storage/framework/*/*
+toeslagen/bootstrap/cache/*.php
