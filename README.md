@@ -217,3 +217,12 @@ Zie [README-zonder-docker.md](README-zonder-docker.md) (originele README van het
 ## Team
 
 Ahmet, Sameer, Ilyas en Ramy. Dockerization: Ahmet Akbulut.
+
+
+## depends_on: wat het wel en niet doet
+
+In docker-compose.yml staat bij app: depends_on: db met condition: service_healthy.
+
+Wat het wel doet: Compose start de db-container eerst en start de app pas als de healthcheck van MySQL (mysqladmin ping) slaagt.
+
+Wat het niet doet: depends_on garandeert niet dat de database later bereikbaar blijft of dat de juiste gebruiker en tabellen al bestaan. Zonder condition wacht Compose alleen tot de container gestart is, niet tot MySQL klaar is. Bij Docker Swarm wordt depends_on helemaal genegeerd. Daarom controleert docker/entrypoint.sh zelf ook of de database bereikbaar is voordat de migraties draaien.
